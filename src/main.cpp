@@ -1,26 +1,13 @@
-#include <GLFW/glfw3.h>
+#include "Engine.h"
 
 int main() {
-  GLFWwindow* window;
+  Engine engine;
 
-  if (!glfwInit()) {
+  if (!engine.init(640, 480)) {
     return -1;
   }
 
-  window = glfwCreateWindow(640, 480, "grotto", NULL, NULL);
-  if (!window) {
-    glfwTerminate();
-    return -1;
-  }
-
-  glfwMakeContextCurrent(window);
-  while (!glfwWindowShouldClose(window)) {
-    glClear(GL_COLOR_BUFFER_BIT);
-    glfwSwapBuffers(window);
-    glfwPollEvents();
-  }
-
-  glfwTerminate();
+  engine.run();
 
   return 0;
 }
