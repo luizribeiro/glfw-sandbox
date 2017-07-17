@@ -1,5 +1,17 @@
 #include "Engine.h"
 
+static void handle_keyboard(
+  GLFWwindow* window,
+  int key,
+  int scancode,
+  int action,
+  int mods
+) {
+  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+    glfwSetWindowShouldClose(window, GLFW_TRUE);
+  }
+}
+
 bool Engine::init(int width, int height) {
   if (!glfwInit()) {
     return false;
@@ -18,6 +30,7 @@ bool Engine::init(int width, int height) {
   }
 
   glfwMakeContextCurrent(this->window);
+  glfwSetKeyCallback(this->window, handle_keyboard);
   return true;
 }
 
