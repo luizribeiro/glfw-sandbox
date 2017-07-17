@@ -3,7 +3,7 @@
 int main() {
   Engine engine;
 
-  if (!engine.init(640, 480)) {
+  if (!engine.init(960, 540)) {
     return -1;
   }
 
