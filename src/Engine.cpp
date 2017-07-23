@@ -31,12 +31,19 @@ bool Engine::init(int width, int height) {
 
   glfwMakeContextCurrent(this->window);
   glfwSetKeyCallback(this->window, handle_keyboard);
+
+  glViewport(0, 0, (GLsizei)width, (GLsizei)height);
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, width, height, 0, 0, 1);
+
   return true;
 }
 
 void Engine::run() {
   while (!glfwWindowShouldClose(this->window)) {
-    glClear(GL_COLOR_BUFFER_BIT);
     this->draw();
     glfwSwapBuffers(this->window);
     glfwPollEvents();
@@ -46,10 +53,16 @@ void Engine::run() {
 }
 
 void Engine::draw() {
-  glBegin(GL_TRIANGLES);
-  glColor3f(1.0, 0.0, 0.0);
-  glVertex3f(0, 0, 0);
-  glVertex3f(0.5, 0, 0);
-  glVertex3f(0, 0.5, 0);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+
+  glBegin(GL_QUADS);
+    glColor3f(1.0, 0.0, 0.0);
+    glVertex2f(100, 100);
+    glVertex2f(200, 100);
+    glVertex2f(200, 200);
+    glVertex2f(100, 200);
   glEnd();
 }
