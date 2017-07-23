@@ -14,6 +14,7 @@
 static int board[BOARD_WIDTH][BOARD_HEIGHT];
 static std::vector<std::vector<int>> currentPiece;
 static int pieceX, pieceY;
+static bool isGameOver;
 
 enum BoardCell {
   BOARD_NONE,
@@ -80,6 +81,7 @@ void Tetris::init() {
   }
 
   setCurrentPiece();
+  isGameOver = false;
 }
 
 static void setColor(int cell) {
@@ -115,7 +117,7 @@ static int getCell(int x, int y) {
   int pieceH = currentPiece[0].size();
   int pieceW = currentPiece.size();
   if (pieceX <= x && x < pieceX + pieceW &&
-      pieceY <= y && y < pieceY + pieceH) {
+      pieceY <= y && y < pieceY + pieceH && !isGameOver) {
     int currentPieceCell = currentPiece[x - pieceX][y - pieceY];
     if (currentPieceCell != BOARD_NONE) {
       return currentPieceCell;
@@ -190,22 +192,41 @@ static void transfer() {
 }
 
 void Tetris::step() {
-  Input input = this->engine->getInput();
-  if (input.isPressing(BTN_RIGHT)) pieceX += 1;
-  else if (input.isPressing(BTN_LEFT)) pieceX -= 1;
-  if (input.isPressing(BTN_DOWN)) pieceY += 1;
+  if (isGameOver) {
+    return;
+  }
+
 
   int mTime = (int)(this->engine->getTime() * 1000);
+  int dX = 0, dY = 0;
+  bool isTicking = false;
   if (mTime >= lastTick + 800) {
     lastTick = mTime;
-    pieceY++;
+    dY = +1;
+    isTicking = true;
+  } else {
+    Input input = this->engine->getInput();
+    if (input.isPressing(BTN_RIGHT)) dX = +1;
+    else if (input.isPressing(BTN_LEFT)) dX = -1;
+    if (input.isPressing(BTN_DOWN)) dY = +1;
   }
+  pieceX += dX;
+  pieceY += dY;
 
   if (!collides()) {
     return;
   }
 
-  pieceY--;
+  pieceX -= dX;
+  pieceY -= dY;
+
+  if (!isTicking) {
+    return;
+  }
+
   transfer();
   setCurrentPiece();
+  if (collides()) {
+    isGameOver = true;
+  }
 }
