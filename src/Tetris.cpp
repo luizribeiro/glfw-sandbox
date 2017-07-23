@@ -3,12 +3,17 @@
 #include "OpenGL.h"
 #include "Tetris.h"
 
+#include <vector>
+#include <cstdio>
+
 #define CELL_WIDTH 20
 #define BORDER_WIDTH 2
 #define BOARD_WIDTH 10
 #define BOARD_HEIGHT 20
 
 static int board[BOARD_WIDTH][BOARD_HEIGHT];
+static std::vector<std::vector<int>> currentPiece;
+static int pieceX, pieceY;
 
 enum BoardCell {
   BOARD_NONE,
@@ -21,6 +26,46 @@ enum BoardCell {
   BOARD_PURPLE
 };
 
+static std::vector<std::vector<std::vector<int>>> pieces = {
+  {
+    {1, 1, 0},
+    {0, 1, 1}
+  },
+  {
+    {2, 2, 2},
+    {2, 0, 0}
+  },
+  {
+    {3, 3},
+    {3, 3}
+  },
+  {
+    {0, 4, 4},
+    {4, 4, 0}
+  },
+  {
+    {5, 5, 5, 5}
+  },
+  {
+    {6, 6, 6},
+    {0, 0, 6}
+  },
+  {
+    {7, 7, 7},
+    {0, 7, 0}
+  }
+};
+
+static void setCurrentPiece(int type) {
+  currentPiece.clear();
+  for (int i = 0; i < pieces[type][0].size(); i++) {
+    currentPiece.push_back(std::vector<int>());
+    for (int j = 0; j < pieces[type].size(); j++) {
+      currentPiece[i].push_back(pieces[type][j][i]);
+    }
+  }
+}
+
 void Tetris::init() {
   glClearColor(.26, .42f, .69f, 1.0f);
 
@@ -29,6 +74,10 @@ void Tetris::init() {
       board[i][j] = BOARD_NONE;
     }
   }
+
+  setCurrentPiece(0);
+  pieceX = 4;
+  pieceY = 0;
 }
 
 static void setColor(int cell) {
@@ -60,6 +109,16 @@ static void setColor(int cell) {
   }
 }
 
+static int getCell(int x, int y) {
+  int pieceH = currentPiece.size();
+  int pieceW = currentPiece[0].size();
+  if (pieceX <= x && x < pieceX + pieceW &&
+      pieceY <= y && y < pieceY + pieceH) {
+    return currentPiece[x - pieceX][y - pieceY];
+  }
+  return board[x][y];
+}
+
 void Tetris::render() {
   glClear(GL_COLOR_BUFFER_BIT);
 
@@ -68,8 +127,9 @@ void Tetris::render() {
 
   for (int i = 0; i < BOARD_WIDTH; i++) {
     for (int j = 0; j < BOARD_HEIGHT; j++) {
+      int cell = getCell(i, j);
       glBegin(GL_QUADS);
-        setColor(board[i][j]);
+        setColor(cell);
         glVertex2f(
             i * (CELL_WIDTH + BORDER_WIDTH),
             j * (CELL_WIDTH + BORDER_WIDTH)
@@ -92,4 +152,9 @@ void Tetris::render() {
 }
 
 void Tetris::step() {
+  Input input = this->engine->getInput();
+  if (input.isPressing(BTN_RIGHT)) pieceX += 1;
+  else if (input.isPressing(BTN_LEFT)) pieceX -= 1;
+  if (input.isPressing(BTN_UP)) pieceY -= 1;
+  else if (input.isPressing(BTN_DOWN)) pieceY += 1;
 }
