@@ -3,8 +3,8 @@
 #include "OpenGL.h"
 #include "Tetris.h"
 
+#include <cstdlib>
 #include <vector>
-#include <cstdio>
 
 #define CELL_WIDTH 20
 #define BORDER_WIDTH 2
@@ -56,12 +56,16 @@ static std::vector<std::vector<std::vector<int>>> pieces = {
   }
 };
 
-static void setCurrentPiece(int type) {
+static void setCurrentPiece() {
+  int type = rand() % 7;
+  pieceX = 4;
+  pieceY = 0;
+
   currentPiece.clear();
-  for (int i = 0; i < pieces[type][0].size(); i++) {
+  for (int i = 0; i < pieces[type].size(); i++) {
     currentPiece.push_back(std::vector<int>());
-    for (int j = 0; j < pieces[type].size(); j++) {
-      currentPiece[i].push_back(pieces[type][j][i]);
+    for (int j = 0; j < pieces[type][i].size(); j++) {
+      currentPiece[i].push_back(pieces[type][i][j]);
     }
   }
 }
@@ -75,9 +79,7 @@ void Tetris::init() {
     }
   }
 
-  setCurrentPiece(0);
-  pieceX = 4;
-  pieceY = 0;
+  setCurrentPiece();
 }
 
 static void setColor(int cell) {
@@ -110,11 +112,14 @@ static void setColor(int cell) {
 }
 
 static int getCell(int x, int y) {
-  int pieceH = currentPiece.size();
-  int pieceW = currentPiece[0].size();
+  int pieceH = currentPiece[0].size();
+  int pieceW = currentPiece.size();
   if (pieceX <= x && x < pieceX + pieceW &&
       pieceY <= y && y < pieceY + pieceH) {
-    return currentPiece[x - pieceX][y - pieceY];
+    int currentPieceCell = currentPiece[x - pieceX][y - pieceY];
+    if (currentPieceCell != BOARD_NONE) {
+      return currentPieceCell;
+    }
   }
   return board[x][y];
 }
@@ -151,10 +156,56 @@ void Tetris::render() {
   }
 }
 
+static int lastTick = 0;
+
+static bool collides() {
+  int pieceW = currentPiece.size();
+  int pieceH = currentPiece[0].size();
+  if (pieceX < 0 || pieceX + pieceW > BOARD_WIDTH ||
+      pieceY < 0 || pieceY + pieceH > BOARD_HEIGHT) {
+    return true;
+  }
+  for (int i = 0; i < pieceW; i++) {
+    for (int j = 0; j < pieceH; j++) {
+      if (currentPiece[i][j] != BOARD_NONE &&
+          board[pieceX + i][pieceY + j] != BOARD_NONE) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+static void transfer() {
+  int pieceW = currentPiece.size();
+  int pieceH = currentPiece[0].size();
+  for (int i = 0; i < pieceW; i++) {
+    for (int j = 0; j < pieceH; j++) {
+      if (currentPiece[i][j] == BOARD_NONE) {
+        continue;
+      }
+      board[pieceX + i][pieceY + j] = currentPiece[i][j];
+    }
+  }
+}
+
 void Tetris::step() {
   Input input = this->engine->getInput();
   if (input.isPressing(BTN_RIGHT)) pieceX += 1;
   else if (input.isPressing(BTN_LEFT)) pieceX -= 1;
-  if (input.isPressing(BTN_UP)) pieceY -= 1;
-  else if (input.isPressing(BTN_DOWN)) pieceY += 1;
+  if (input.isPressing(BTN_DOWN)) pieceY += 1;
+
+  int mTime = (int)(this->engine->getTime() * 1000);
+  if (mTime >= lastTick + 800) {
+    lastTick = mTime;
+    pieceY++;
+  }
+
+  if (!collides()) {
+    return;
+  }
+
+  pieceY--;
+  transfer();
+  setCurrentPiece();
 }
