@@ -58,11 +58,14 @@ void Engine::draw() {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
+  int axesCount;
+  const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
+
   glBegin(GL_QUADS);
     glColor3f(1.0, 0.0, 0.0);
-    glVertex2f(100, 100);
-    glVertex2f(200, 100);
-    glVertex2f(200, 200);
-    glVertex2f(100, 200);
+    glVertex2f((1 + axes[0]) * 480 - 50, (1 + axes[1]) * 270 - 50);
+    glVertex2f((1 + axes[0]) * 480 + 50, (1 + axes[1]) * 270 - 50);
+    glVertex2f((1 + axes[0]) * 480 + 50, (1 + axes[1]) * 270 + 50);
+    glVertex2f((1 + axes[0]) * 480 - 50, (1 + axes[1]) * 270 + 50);
   glEnd();
 }
