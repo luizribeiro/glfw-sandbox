@@ -61,13 +61,12 @@ void Engine::draw() {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  InputAxis stick = this->input.getStick(STK_RIGHT);
-
+  Vec2f stick = this->input.getStick(STK_LEFT);
   glBegin(GL_QUADS);
     glColor3f(1.0, 0.0, 0.0);
-    glVertex2f((1 + stick.first) * 480 - 50, (1 + stick.second) * 270 - 50);
-    glVertex2f((1 + stick.first) * 480 + 50, (1 + stick.second) * 270 - 50);
-    glVertex2f((1 + stick.first) * 480 + 50, (1 + stick.second) * 270 + 50);
-    glVertex2f((1 + stick.first) * 480 - 50, (1 + stick.second) * 270 + 50);
+    glVertex2f((1 + stick.x) * 480 - 50, (1 + stick.y) * 270 - 50);
+    glVertex2f((1 + stick.x) * 480 + 50, (1 + stick.y) * 270 - 50);
+    glVertex2f((1 + stick.x) * 480 + 50, (1 + stick.y) * 270 + 50);
+    glVertex2f((1 + stick.x) * 480 - 50, (1 + stick.y) * 270 + 50);
   glEnd();
 }

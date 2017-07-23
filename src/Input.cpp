@@ -32,14 +32,14 @@ void Input::poll() {
 
   int axesCount;
   const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
-  this->sticks[STK_LEFT] = std::make_pair(axes[0], axes[1]);
-  this->sticks[STK_RIGHT] = std::make_pair(axes[2], axes[3]);
+  this->sticks[STK_LEFT] = Vec2f(axes[0], axes[1]);
+  this->sticks[STK_RIGHT] = Vec2f(axes[2], axes[3]);
 }
 
 bool Input::isPressing(InputButton button) {
   return this->buttons[button];
 }
 
-InputAxis Input::getStick(InputStick stick) {
+Vec2f Input::getStick(InputStick stick) {
   return this->sticks[stick];
 }
