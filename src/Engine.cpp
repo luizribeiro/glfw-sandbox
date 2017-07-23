@@ -35,7 +35,7 @@ bool Engine::init(int width, int height) {
   this->input.init(GLFW_JOYSTICK_1);
 
   glViewport(0, 0, (GLsizei)width, (GLsizei)height);
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glClearColor(.26, .42f, .69f, 1.0f);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -63,7 +63,7 @@ void Engine::draw() {
 
   Vec2f stick = this->input.getStick(STK_LEFT);
   glBegin(GL_QUADS);
-    glColor3f(1.0, 0.0, 0.0);
+    glColor3f(.9f, .53f, .58f);
     glVertex2f((1 + stick.x) * 480 - 50, (1 + stick.y) * 270 - 50);
     glVertex2f((1 + stick.x) * 480 + 50, (1 + stick.y) * 270 - 50);
     glVertex2f((1 + stick.x) * 480 + 50, (1 + stick.y) * 270 + 50);
