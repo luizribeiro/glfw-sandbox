@@ -8,6 +8,10 @@ enum InputButton {
   BTN_RIGHT,
   BTN_DOWN,
   BTN_LEFT,
+  BTN_X,
+  BTN_O,
+  BTN_SQR,
+  BTN_TRI,
   NUM_BUTTONS
 };
 

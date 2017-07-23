@@ -5,10 +5,14 @@
 #include <GLFW/glfw3.h>
 
 int inputButtonToGlfwButton[NUM_BUTTONS] = {
-  12, // BTN_UP
-  15, // BTN_RIGHT
-  13, // BTN_DOWN
-  14 // BTN_LEFT
+  /*BTN_UP   */ 14,
+  /*BTN_RIGHT*/ 15,
+  /*BTN_DOWN */ 16,
+  /*BTN_LEFT */ 17,
+  /*BTN_X    */ 1,
+  /*BTN_O    */ 2,
+  /*BTN_SQR  */ 0,
+  /*BTN_TRI  */ 3
 };
 
 void Input::init(int joystick) {
