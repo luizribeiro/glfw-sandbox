@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include "Game.h"
 
 static void handle_keyboard(
   GLFWwindow* window,
@@ -12,7 +13,7 @@ static void handle_keyboard(
   }
 }
 
-bool Engine::init(int width, int height) {
+bool Engine::init(int width, int height, Game *game) {
   if (!glfwInit()) {
     return false;
   }
@@ -33,9 +34,11 @@ bool Engine::init(int width, int height) {
   glfwSetKeyCallback(this->window, handle_keyboard);
 
   this->input.init(GLFW_JOYSTICK_1);
+  this->game = game;
+  this->game->setEngine(this);
+  this->game->init();
 
   glViewport(0, 0, (GLsizei)width, (GLsizei)height);
-  glClearColor(.26, .42f, .69f, 1.0f);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -46,27 +49,16 @@ bool Engine::init(int width, int height) {
 
 void Engine::run() {
   while (!glfwWindowShouldClose(this->window)) {
-    this->draw();
+    this->game->render();
     glfwSwapBuffers(this->window);
     glfwPollEvents();
     this->input.read();
+    this->game->step();
   }
 
   glfwTerminate();
 }
 
-void Engine::draw() {
-  glClear(GL_COLOR_BUFFER_BIT);
-
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-
-  Vec2f stick = this->input.getStick(STK_LEFT);
-  glBegin(GL_QUADS);
-    glColor3f(.9f, .53f, .58f);
-    glVertex2f((1 + stick.x) * 480 - 50, (1 + stick.y) * 270 - 50);
-    glVertex2f((1 + stick.x) * 480 + 50, (1 + stick.y) * 270 - 50);
-    glVertex2f((1 + stick.x) * 480 + 50, (1 + stick.y) * 270 + 50);
-    glVertex2f((1 + stick.x) * 480 - 50, (1 + stick.y) * 270 + 50);
-  glEnd();
+Input Engine::getInput() {
+  return this->input;
 }

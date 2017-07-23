@@ -5,15 +5,17 @@
 
 #include <GLFW/glfw3.h>
 
+class Game;
+
 class Engine {
   public:
-    bool init(int width, int height);
+    bool init(int width, int height, Game *game);
     void run();
+    Input getInput();
   private:
     GLFWwindow* window;
     Input input;
-
-    void draw();
+    Game* game;
 };
 
 #endif
