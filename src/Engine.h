@@ -1,3 +1,6 @@
+#ifndef __ENGINE_H
+#define __ENGINE_H
+
 #include <GLFW/glfw3.h>
 
 class Engine {
@@ -9,3 +12,5 @@ class Engine {
 
     void draw();
 };
+
+#endif
