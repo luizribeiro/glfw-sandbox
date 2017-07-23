@@ -61,14 +61,20 @@ static void setCurrentPiece() {
   int type = rand() % 7;
   pieceX = 4;
   pieceY = 0;
+  currentPiece = pieces[type];
+}
 
-  currentPiece.clear();
-  for (int i = 0; i < pieces[type].size(); i++) {
-    currentPiece.push_back(std::vector<int>());
-    for (int j = 0; j < pieces[type][i].size(); j++) {
-      currentPiece[i].push_back(pieces[type][i][j]);
+static void rotate() {
+  std::vector<std::vector<int>> newPiece;
+  int pieceH = currentPiece[0].size();
+  int pieceW = currentPiece.size();
+  for (int i = 0; i < pieceH; i++) {
+    newPiece.push_back(std::vector<int>());
+    for (int j = 0; j < pieceW; j++) {
+      newPiece[i].push_back(currentPiece[pieceW-j-1][i]);
     }
   }
+  currentPiece = newPiece;
 }
 
 void Tetris::init() {
@@ -80,6 +86,7 @@ void Tetris::init() {
     }
   }
 
+  srand(this->engine->getTime());
   setCurrentPiece();
   isGameOver = false;
 }
@@ -196,22 +203,21 @@ void Tetris::step() {
     return;
   }
 
-
   int mTime = (int)(this->engine->getTime() * 1000);
-  int dX = 0, dY = 0;
-  bool isTicking = false;
+  int dX = 0, dY = 0, dR = 0;
   if (mTime >= lastTick + 800) {
     lastTick = mTime;
     dY = +1;
-    isTicking = true;
   } else {
     Input input = this->engine->getInput();
     if (input.isPressing(BTN_RIGHT)) dX = +1;
     else if (input.isPressing(BTN_LEFT)) dX = -1;
-    if (input.isPressing(BTN_DOWN)) dY = +1;
+    else if (input.isPressing(BTN_DOWN)) dY = +1;
+    else if (input.isPressing(BTN_X)) dR = +1;
   }
   pieceX += dX;
   pieceY += dY;
+  if (dR == 1) rotate();
 
   if (!collides()) {
     return;
@@ -219,8 +225,12 @@ void Tetris::step() {
 
   pieceX -= dX;
   pieceY -= dY;
+  if (dR == 1) {
+    // undo rotation... poorly
+    for (int i = 0; i < 3; i++) rotate();
+  }
 
-  if (!isTicking) {
+  if (dY == 0) {
     return;
   }
 
