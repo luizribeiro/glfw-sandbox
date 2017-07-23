@@ -23,7 +23,7 @@ void Input::init(int joystick) {
   }
 }
 
-void Input::poll() {
+void Input::read() {
   int numButtons;
   const unsigned char *buttons = glfwGetJoystickButtons(
     this->joystick,

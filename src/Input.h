@@ -24,7 +24,7 @@ enum InputStick {
 class Input {
   public:
     void init(int joystick);
-    void poll();
+    void read();
     bool isPressing(InputButton button);
     Vec2f getStick(InputStick stick);
 

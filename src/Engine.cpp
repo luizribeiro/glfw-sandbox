@@ -49,7 +49,7 @@ void Engine::run() {
     this->draw();
     glfwSwapBuffers(this->window);
     glfwPollEvents();
-    this->input.poll();
+    this->input.read();
   }
 
   glfwTerminate();
