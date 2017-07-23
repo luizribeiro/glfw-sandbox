@@ -3,6 +3,7 @@ project (grotto)
 
 file(GLOB SOURCES "src/*.cpp")
 add_executable(grotto ${SOURCES})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 find_package(PkgConfig REQUIRED)
 
