@@ -1,6 +1,8 @@
 #include "Engine.h"
 #include "Game.h"
 
+#include <GLFW/glfw3.h>
+
 static void handle_keyboard(
   GLFWwindow* window,
   int key,

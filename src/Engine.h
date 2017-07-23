@@ -3,8 +3,7 @@
 
 #include "Input.h"
 
-#include <GLFW/glfw3.h>
-
+class GLFWwindow;
 class Game;
 
 class Engine {
