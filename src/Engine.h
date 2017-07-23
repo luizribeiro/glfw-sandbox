@@ -11,6 +11,7 @@ class Engine {
     bool init(int width, int height, Game *game);
     void run();
     Input getInput();
+    double getTime();
   private:
     GLFWwindow* window;
     Input input;

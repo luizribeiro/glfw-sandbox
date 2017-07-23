@@ -64,3 +64,7 @@ void Engine::run() {
 Input Engine::getInput() {
   return this->input;
 }
+
+double Engine::getTime() {
+  return glfwGetTime();
+}
