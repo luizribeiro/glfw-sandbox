@@ -3,6 +3,13 @@
 #include "OpenGL.h"
 #include "Tetris.h"
 
+#define CELL_WIDTH 20
+#define BORDER_WIDTH 2
+#define BOARD_WIDTH 10
+#define BOARD_HEIGHT 20
+
+static int board[BOARD_WIDTH][BOARD_HEIGHT];
+
 enum BoardCell {
   BOARD_NONE,
   BOARD_RED,
@@ -14,9 +21,6 @@ enum BoardCell {
   BOARD_PURPLE
 };
 
-#define CELL_WIDTH 20
-#define BORDER_WIDTH 2
-
 void Tetris::init() {
   glClearColor(.26, .42f, .69f, 1.0f);
 
@@ -27,7 +31,7 @@ void Tetris::init() {
   }
 }
 
-void setColor(int cell) {
+static void setColor(int cell) {
   switch (cell) {
     case BOARD_NONE:
       glColor3f(.18f, .40f, .67f);
