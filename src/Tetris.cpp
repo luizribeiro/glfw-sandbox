@@ -77,6 +77,8 @@ static void rotate() {
     }
   }
   currentPiece = newPiece;
+  pieceX -= (pieceH - pieceW) / 2;
+  pieceY += (pieceH - pieceW) / 2;
 }
 
 void Tetris::init() {
