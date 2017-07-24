@@ -276,6 +276,7 @@ void Tetris::step() {
 
   int dX = 0, dY = 0, dR = 0;
   if (mTime >= lastTick + 500) {
+    lastTick = mTime;
     if (cleanRows()) {
     } else if (currentPiece.empty()) {
       setCurrentPiece();
@@ -284,7 +285,6 @@ void Tetris::step() {
       }
       return;
     } else {
-      lastTick = mTime;
       dY = +1;
     }
   } else {
