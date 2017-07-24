@@ -288,15 +288,24 @@ void Tetris::step() {
       dY = +1;
     }
   } else {
-    if (isPressed(input, mTime, BTN_RIGHT)) dX = +1;
-    else if (isPressed(input, mTime, BTN_LEFT)) dX = -1;
+    if (isPressed(input, mTime, BTN_X)) dR = +1;
     else if (isPressed(input, mTime, BTN_DOWN)) dY = +1;
-    else if (isPressed(input, mTime, BTN_X)) dR = +1;
+    else if (isPressed(input, mTime, BTN_RIGHT)) dX = +1;
+    else if (isPressed(input, mTime, BTN_LEFT)) dX = -1;
   }
 
   pieceX += dX;
   pieceY += dY;
-  if (dR == 1) rotate();
+  if (dR == 1) {
+    rotate();
+    int pX = pieceX;
+    for (int i = 0; i <= 2; i++) {
+      pieceX = pX + i;
+      if (!collides()) break;
+      pieceX = pX - i;
+      if (!collides()) break;
+    }
+  }
 
   if (!collides()) {
     return;
