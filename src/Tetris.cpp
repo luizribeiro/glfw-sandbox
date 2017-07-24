@@ -140,6 +140,14 @@ void Tetris::render() {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
+  glTranslatef(
+    (this->engine->getScreenWidth() -
+      (CELL_WIDTH + BORDER_WIDTH) * BOARD_WIDTH - BORDER_WIDTH) / 2.0f,
+    (this->engine->getScreenHeight() -
+      (CELL_WIDTH + BORDER_WIDTH) * BOARD_HEIGHT - BORDER_WIDTH) / 2.0f,
+    .0f
+  );
+
   for (int i = 0; i < BOARD_WIDTH; i++) {
     for (int j = 0; j < BOARD_HEIGHT; j++) {
       int cell = getCell(i, j);

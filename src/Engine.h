@@ -12,10 +12,14 @@ class Engine {
     void run();
     Input getInput();
     double getTime();
+    int getScreenWidth();
+    int getScreenHeight();
   private:
     GLFWwindow* window;
     Input input;
     Game* game;
+    int screenWidth;
+    int screenHeight;
 };
 
 #endif

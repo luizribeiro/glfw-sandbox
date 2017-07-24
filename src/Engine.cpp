@@ -20,9 +20,12 @@ bool Engine::init(int width, int height, Game *game) {
     return false;
   }
 
+  this->screenWidth = width;
+  this->screenHeight = height;
+
   this->window = glfwCreateWindow(
-    width,
-    height,
+    this->screenWidth,
+    this->screenHeight,
     "grotto",
     NULL,
     NULL
@@ -40,11 +43,11 @@ bool Engine::init(int width, int height, Game *game) {
   this->game->setEngine(this);
   this->game->init();
 
-  glViewport(0, 0, (GLsizei)width, (GLsizei)height);
+  glViewport(0, 0, (GLsizei)this->screenWidth, (GLsizei)this->screenHeight);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glOrtho(0, width, height, 0, 0, 1);
+  glOrtho(0, this->screenWidth, this->screenHeight, 0, 0, 1);
 
   return true;
 }
@@ -67,4 +70,12 @@ Input Engine::getInput() {
 
 double Engine::getTime() {
   return glfwGetTime();
+}
+
+int Engine::getScreenWidth() {
+  return this->screenWidth;
+}
+
+int Engine::getScreenHeight() {
+  return this->screenHeight;
 }
