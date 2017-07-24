@@ -198,6 +198,8 @@ static void transfer() {
       board[pieceX + i][pieceY + j] = currentPiece[i][j];
     }
   }
+
+  currentPiece.clear();
 }
 
 static int pressedAt[NUM_BUTTONS];
@@ -222,9 +224,17 @@ void Tetris::step() {
 
   int mTime = (int)(this->engine->getTime() * 1000);
   int dX = 0, dY = 0, dR = 0;
-  if (mTime >= lastTick + 800) {
-    lastTick = mTime;
-    dY = +1;
+  if (mTime >= lastTick + 500) {
+    if (currentPiece.empty()) {
+      setCurrentPiece();
+      if (collides()) {
+        isGameOver = true;
+      }
+      return;
+    } else {
+      lastTick = mTime;
+      dY = +1;
+    }
   } else {
     Input input = this->engine->getInput();
     if (isPressed(input, mTime, BTN_RIGHT)) dX = +1;
@@ -232,6 +242,7 @@ void Tetris::step() {
     else if (isPressed(input, mTime, BTN_DOWN)) dY = +1;
     else if (isPressed(input, mTime, BTN_X)) dR = +1;
   }
+
   pieceX += dX;
   pieceY += dY;
   if (dR == 1) rotate();
@@ -247,13 +258,7 @@ void Tetris::step() {
     for (int i = 0; i < 3; i++) rotate();
   }
 
-  if (dY == 0) {
-    return;
-  }
-
-  transfer();
-  setCurrentPiece();
-  if (collides()) {
-    isGameOver = true;
+  if (dY == +1) {
+    transfer();
   }
 }
