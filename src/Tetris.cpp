@@ -83,6 +83,8 @@ static void rotate() {
 
 void Tetris::init() {
   glClearColor(.26, .42f, .69f, 1.0f);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   board = std::vector<std::vector<int>>(
     BOARD_HEIGHT,
@@ -174,6 +176,20 @@ void Tetris::render() {
       glEnd();
     }
   }
+
+  if (isGameOver) {
+    glLoadIdentity();
+    glBegin(GL_QUADS);
+      glColor4f(.0f, .0f, .0f, .5f);
+      glVertex2f(.0f, .0f);
+      glVertex2f(this->engine->getScreenWidth(), .0f);
+      glVertex2f(
+        this->engine->getScreenWidth(),
+        this->engine->getScreenHeight()
+      );
+      glVertex2f(.0f, this->engine->getScreenHeight());
+    glEnd();
+  }
 }
 
 static int lastTick = 0;
@@ -248,11 +264,16 @@ static bool cleanRows() {
 }
 
 void Tetris::step() {
+  Input input = this->engine->getInput();
+  int mTime = (int)(this->engine->getTime() * 1000);
+
   if (isGameOver) {
+    if (isPressed(input, mTime, BTN_TRI)) {
+      this->init();
+    }
     return;
   }
 
-  int mTime = (int)(this->engine->getTime() * 1000);
   int dX = 0, dY = 0, dR = 0;
   if (mTime >= lastTick + 500) {
     if (cleanRows()) {
@@ -267,7 +288,6 @@ void Tetris::step() {
       dY = +1;
     }
   } else {
-    Input input = this->engine->getInput();
     if (isPressed(input, mTime, BTN_RIGHT)) dX = +1;
     else if (isPressed(input, mTime, BTN_LEFT)) dX = -1;
     else if (isPressed(input, mTime, BTN_DOWN)) dY = +1;
