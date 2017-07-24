@@ -13,7 +13,7 @@
 
 #define BTN_REPEAT_MS 250
 
-static int board[BOARD_WIDTH][BOARD_HEIGHT];
+static std::vector<std::vector<int>> board;
 static std::vector<std::vector<int>> currentPiece;
 static int pieceX, pieceY;
 static bool isGameOver;
@@ -82,11 +82,10 @@ static void rotate() {
 void Tetris::init() {
   glClearColor(.26, .42f, .69f, 1.0f);
 
-  for (int i = 0; i < BOARD_WIDTH; i++) {
-    for (int j = 0; j < BOARD_HEIGHT; j++) {
-      board[i][j] = BOARD_NONE;
-    }
-  }
+  board = std::vector<std::vector<int>>(
+    BOARD_HEIGHT,
+    std::vector<int>(BOARD_WIDTH, BOARD_NONE)
+  );
 
   srand(this->engine->getTime());
   setCurrentPiece();
@@ -132,7 +131,7 @@ static int getCell(int x, int y) {
       return currentPieceCell;
     }
   }
-  return board[x][y];
+  return board[y][x];
 }
 
 void Tetris::render() {
@@ -179,7 +178,7 @@ static bool collides() {
   for (int i = 0; i < pieceW; i++) {
     for (int j = 0; j < pieceH; j++) {
       if (currentPiece[i][j] != BOARD_NONE &&
-          board[pieceX + i][pieceY + j] != BOARD_NONE) {
+          board[pieceY + j][pieceX + i] != BOARD_NONE) {
         return true;
       }
     }
@@ -195,7 +194,7 @@ static void transfer() {
       if (currentPiece[i][j] == BOARD_NONE) {
         continue;
       }
-      board[pieceX + i][pieceY + j] = currentPiece[i][j];
+      board[pieceY + j][pieceX + i] = currentPiece[i][j];
     }
   }
 
@@ -217,6 +216,27 @@ static bool isPressed(Input input, int mTime, InputButton btn) {
   return pressedAt[btn] + BTN_REPEAT_MS <= mTime;
 }
 
+static bool cleanRows() {
+  bool didClean = false;
+
+  for (int i = 0; i < BOARD_HEIGHT; i++) {
+    bool isFull = true;
+    for (int j = 0; j < BOARD_WIDTH; j++) {
+      if (board[i][j] == BOARD_NONE) { 
+        isFull = false;
+        continue;
+      }
+    }
+
+    if (isFull) {
+      didClean = true;
+      board.erase(board.begin() + i);
+      board.insert(board.begin(), std::vector<int>(BOARD_WIDTH));
+    }
+  }
+  return false;
+}
+
 void Tetris::step() {
   if (isGameOver) {
     return;
@@ -225,7 +245,8 @@ void Tetris::step() {
   int mTime = (int)(this->engine->getTime() * 1000);
   int dX = 0, dY = 0, dR = 0;
   if (mTime >= lastTick + 500) {
-    if (currentPiece.empty()) {
+    if (cleanRows()) {
+    } else if (currentPiece.empty()) {
       setCurrentPiece();
       if (collides()) {
         isGameOver = true;
