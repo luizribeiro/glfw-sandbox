@@ -11,6 +11,8 @@
 #define BOARD_WIDTH 10
 #define BOARD_HEIGHT 20
 
+#define BTN_REPEAT_MS 250
+
 static int board[BOARD_WIDTH][BOARD_HEIGHT];
 static std::vector<std::vector<int>> currentPiece;
 static int pieceX, pieceY;
@@ -198,6 +200,21 @@ static void transfer() {
   }
 }
 
+static int pressedAt[NUM_BUTTONS];
+static bool isPressed(Input input, int mTime, InputButton btn) {
+  if (!input.isPressing(btn)) {
+    pressedAt[btn] = 0;
+    return false;
+  }
+
+  if (pressedAt[btn] == 0) {
+    pressedAt[btn] = mTime;
+    return true;
+  }
+
+  return pressedAt[btn] + BTN_REPEAT_MS <= mTime;
+}
+
 void Tetris::step() {
   if (isGameOver) {
     return;
@@ -210,10 +227,10 @@ void Tetris::step() {
     dY = +1;
   } else {
     Input input = this->engine->getInput();
-    if (input.isPressing(BTN_RIGHT)) dX = +1;
-    else if (input.isPressing(BTN_LEFT)) dX = -1;
-    else if (input.isPressing(BTN_DOWN)) dY = +1;
-    else if (input.isPressing(BTN_X)) dR = +1;
+    if (isPressed(input, mTime, BTN_RIGHT)) dX = +1;
+    else if (isPressed(input, mTime, BTN_LEFT)) dX = -1;
+    else if (isPressed(input, mTime, BTN_DOWN)) dY = +1;
+    else if (isPressed(input, mTime, BTN_X)) dR = +1;
   }
   pieceX += dX;
   pieceY += dY;
