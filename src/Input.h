@@ -3,21 +3,21 @@
 
 #include "Common.h"
 
-enum InputButton {
-  BTN_UP,
-  BTN_RIGHT,
-  BTN_DOWN,
-  BTN_LEFT,
-  BTN_X,
-  BTN_O,
-  BTN_SQR,
-  BTN_TRI,
+enum class InputButton {
+  UP,
+  RIGHT,
+  DOWN,
+  LEFT,
+  X,
+  O,
+  SQR,
+  TRI,
   NUM_BUTTONS
 };
 
-enum InputStick {
-  STK_LEFT,
-  STK_RIGHT,
+enum class InputStick {
+  LEFT,
+  RIGHT,
   NUM_STICKS
 };
 
@@ -30,8 +30,8 @@ class Input {
 
   private:
     int joystick;
-    bool buttons[NUM_BUTTONS];
-    Vec2f sticks[NUM_STICKS];
+    bool buttons[(int)InputButton::NUM_BUTTONS];
+    Vec2f sticks[(int)InputStick::NUM_STICKS];
 };
 
 #endif

@@ -13,49 +13,49 @@
 
 #define BTN_REPEAT_MS 250
 
-static std::vector<std::vector<int>> board;
-static std::vector<std::vector<int>> currentPiece;
+enum class BoardCell {
+  NONE,
+  RED,
+  ORANGE,
+  YELLOW,
+  GREEN,
+  CYAN,
+  BLUE,
+  PURPLE
+};
+
+static std::vector<std::vector<BoardCell>> board;
+static std::vector<std::vector<BoardCell>> currentPiece;
 static int pieceX, pieceY;
 static bool isGameOver;
 
-enum BoardCell {
-  BOARD_NONE,
-  BOARD_RED,
-  BOARD_ORANGE,
-  BOARD_YELLOW,
-  BOARD_GREEN,
-  BOARD_CYAN,
-  BOARD_BLUE,
-  BOARD_PURPLE
-};
-
-static std::vector<std::vector<std::vector<int>>> pieces = {
+static std::vector<std::vector<std::vector<BoardCell>>> pieces = {
   {
-    {1, 1, 0},
-    {0, 1, 1}
+    {BoardCell::RED,  BoardCell::RED, BoardCell::NONE},
+    {BoardCell::NONE, BoardCell::RED, BoardCell::RED }
   },
   {
-    {2, 2, 2},
-    {2, 0, 0}
+    {BoardCell::ORANGE, BoardCell::ORANGE, BoardCell::ORANGE},
+    {BoardCell::ORANGE, BoardCell::NONE,   BoardCell::NONE  }
   },
   {
-    {3, 3},
-    {3, 3}
+    {BoardCell::YELLOW, BoardCell::YELLOW},
+    {BoardCell::YELLOW, BoardCell::YELLOW}
   },
   {
-    {0, 4, 4},
-    {4, 4, 0}
+    {BoardCell::NONE,  BoardCell::GREEN, BoardCell::GREEN},
+    {BoardCell::GREEN, BoardCell::GREEN, BoardCell::NONE }
   },
   {
-    {5, 5, 5, 5}
+    {BoardCell::CYAN, BoardCell::CYAN, BoardCell::CYAN, BoardCell::CYAN}
   },
   {
-    {6, 6, 6},
-    {0, 0, 6}
+    {BoardCell::BLUE, BoardCell::BLUE, BoardCell::BLUE},
+    {BoardCell::NONE, BoardCell::NONE, BoardCell::BLUE}
   },
   {
-    {7, 7, 7},
-    {0, 7, 0}
+    {BoardCell::PURPLE, BoardCell::PURPLE, BoardCell::PURPLE},
+    {BoardCell::NONE,   BoardCell::PURPLE, BoardCell::NONE}
   }
 };
 
@@ -67,11 +67,11 @@ static void setCurrentPiece() {
 }
 
 static void rotate() {
-  std::vector<std::vector<int>> newPiece;
+  std::vector<std::vector<BoardCell>> newPiece;
   int pieceH = currentPiece[0].size();
   int pieceW = currentPiece.size();
   for (int i = 0; i < pieceH; i++) {
-    newPiece.push_back(std::vector<int>());
+    newPiece.push_back(std::vector<BoardCell>());
     for (int j = 0; j < pieceW; j++) {
       newPiece[i].push_back(currentPiece[pieceW-j-1][i]);
     }
@@ -86,9 +86,9 @@ void Tetris::init() {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  board = std::vector<std::vector<int>>(
+  board = std::vector<std::vector<BoardCell>>(
     BOARD_HEIGHT,
-    std::vector<int>(BOARD_WIDTH, BOARD_NONE)
+    std::vector<BoardCell>(BOARD_WIDTH, BoardCell::NONE)
   );
 
   srand(this->engine->getTime());
@@ -96,42 +96,42 @@ void Tetris::init() {
   isGameOver = false;
 }
 
-static void setColor(int cell) {
+static void setColor(BoardCell cell) {
   switch (cell) {
-    case BOARD_NONE:
+    case BoardCell::NONE:
       glColor3f(.18f, .40f, .67f);
       return;
-    case BOARD_RED:
+    case BoardCell::RED:
       glColor3f(.9f, .53f, .58f);
       return;
-    case BOARD_PURPLE:
+    case BoardCell::PURPLE:
       glColor3f(.54f, .63f, .83f);
       return;
-    case BOARD_YELLOW:
+    case BoardCell::YELLOW:
       glColor3f(.98f, .79f, .35f);
       return;
-    case BOARD_GREEN:
+    case BoardCell::GREEN:
       glColor3f(.67f, .80f, .42f);
       return;
-    case BOARD_ORANGE:
+    case BoardCell::ORANGE:
       glColor3f(.93f, .66f, .42f);
       return;
-    case BOARD_BLUE:
+    case BoardCell::BLUE:
       glColor3f(.18f, .73f, .91f);
       return;
-    case BOARD_CYAN:
+    case BoardCell::CYAN:
       glColor3f(.09f, .72f, .75f);
       return;
   }
 }
 
-static int getCell(int x, int y) {
+static BoardCell getCell(int x, int y) {
   int pieceH = currentPiece[0].size();
   int pieceW = currentPiece.size();
   if (pieceX <= x && x < pieceX + pieceW &&
       pieceY <= y && y < pieceY + pieceH && !isGameOver) {
-    int currentPieceCell = currentPiece[x - pieceX][y - pieceY];
-    if (currentPieceCell != BOARD_NONE) {
+    BoardCell currentPieceCell = currentPiece[x - pieceX][y - pieceY];
+    if (currentPieceCell != BoardCell::NONE) {
       return currentPieceCell;
     }
   }
@@ -154,7 +154,7 @@ void Tetris::render() {
 
   for (int i = 0; i < BOARD_WIDTH; i++) {
     for (int j = 0; j < BOARD_HEIGHT; j++) {
-      int cell = getCell(i, j);
+      BoardCell cell = getCell(i, j);
       glBegin(GL_QUADS);
         setColor(cell);
         glVertex2f(
@@ -203,8 +203,8 @@ static bool collides() {
   }
   for (int i = 0; i < pieceW; i++) {
     for (int j = 0; j < pieceH; j++) {
-      if (currentPiece[i][j] != BOARD_NONE &&
-          board[pieceY + j][pieceX + i] != BOARD_NONE) {
+      if (currentPiece[i][j] != BoardCell::NONE &&
+          board[pieceY + j][pieceX + i] != BoardCell::NONE) {
         return true;
       }
     }
@@ -217,7 +217,7 @@ static void transfer() {
   int pieceH = currentPiece[0].size();
   for (int i = 0; i < pieceW; i++) {
     for (int j = 0; j < pieceH; j++) {
-      if (currentPiece[i][j] == BOARD_NONE) {
+      if (currentPiece[i][j] == BoardCell::NONE) {
         continue;
       }
       board[pieceY + j][pieceX + i] = currentPiece[i][j];
@@ -227,19 +227,19 @@ static void transfer() {
   currentPiece.clear();
 }
 
-static int pressedAt[NUM_BUTTONS];
+static int pressedAt[(int)InputButton::NUM_BUTTONS];
 static bool isPressed(Input input, int mTime, InputButton btn) {
   if (!input.isPressing(btn)) {
-    pressedAt[btn] = 0;
+    pressedAt[(int)btn] = 0;
     return false;
   }
 
-  if (pressedAt[btn] == 0) {
-    pressedAt[btn] = mTime;
+  if (pressedAt[(int)btn] == 0) {
+    pressedAt[(int)btn] = mTime;
     return true;
   }
 
-  return pressedAt[btn] + BTN_REPEAT_MS <= mTime;
+  return pressedAt[(int)btn] + BTN_REPEAT_MS <= mTime;
 }
 
 static bool cleanRows() {
@@ -248,7 +248,7 @@ static bool cleanRows() {
   for (int i = 0; i < BOARD_HEIGHT; i++) {
     bool isFull = true;
     for (int j = 0; j < BOARD_WIDTH; j++) {
-      if (board[i][j] == BOARD_NONE) { 
+      if (board[i][j] == BoardCell::NONE) {
         isFull = false;
         continue;
       }
@@ -257,7 +257,7 @@ static bool cleanRows() {
     if (isFull) {
       didClean = true;
       board.erase(board.begin() + i);
-      board.insert(board.begin(), std::vector<int>(BOARD_WIDTH));
+      board.insert(board.begin(), std::vector<BoardCell>(BOARD_WIDTH));
     }
   }
   return false;
@@ -268,7 +268,7 @@ void Tetris::step() {
   int mTime = (int)(this->engine->getTime() * 1000);
 
   if (isGameOver) {
-    if (isPressed(input, mTime, BTN_TRI)) {
+    if (isPressed(input, mTime, InputButton::TRI)) {
       this->init();
     }
     return;
@@ -288,10 +288,10 @@ void Tetris::step() {
       dY = +1;
     }
   } else {
-    if (isPressed(input, mTime, BTN_X)) dR = +1;
-    else if (isPressed(input, mTime, BTN_DOWN)) dY = +1;
-    else if (isPressed(input, mTime, BTN_RIGHT)) dX = +1;
-    else if (isPressed(input, mTime, BTN_LEFT)) dX = -1;
+    if (isPressed(input, mTime, InputButton::X)) dR = +1;
+    else if (isPressed(input, mTime, InputButton::DOWN)) dY = +1;
+    else if (isPressed(input, mTime, InputButton::RIGHT)) dX = +1;
+    else if (isPressed(input, mTime, InputButton::LEFT)) dX = -1;
   }
 
   pieceX += dX;
